@@ -1,5 +1,5 @@
 import paper from '@scratch/paper';
-import {createCanvas, getRaster, getBackgroundGuideLayer} from '../layer';
+import {createCanvas, getRaster, getBackgroundPaper} from '../layer';
 
 const LOUPE_RADIUS = 20;
 const ZOOM_SCALE = 3;
@@ -11,7 +11,7 @@ class EyeDropperTool extends paper.Tool {
         const layer = isBitmap ? getRaster().layer : paper.project.activeLayer;
         const contentRaster3x = layer.rasterize(
             72 * ZOOM_SCALE * paper.view.zoom, false /* insert */, paper.view.bounds);
-        const backgroundRaster3x = getBackgroundGuideLayer().rasterize(
+        const backgroundRaster3x = getBackgroundPaper().rasterize(
             72 * ZOOM_SCALE * paper.view.zoom, false /* insert */, paper.view.bounds);
 
         // Canvas from which loupe is cut, shows art and grid

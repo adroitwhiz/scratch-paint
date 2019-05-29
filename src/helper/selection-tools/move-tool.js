@@ -6,6 +6,7 @@ import {snapDeltaToAngle} from '../math';
 import {ART_BOARD_WIDTH, ART_BOARD_HEIGHT} from '../view';
 import {clearSelection, cloneSelection, getSelectedLeafItems, getSelectedRootItems, setItemSelection}
     from '../selection';
+import {getBackgroundGuideLayer} from '../layer';
 
 /**
  * Tool to handle dragging an item to reposition it in a selection mode.
@@ -38,6 +39,7 @@ class MoveTool {
      *     select the whole group.
      */
     onMouseDown (hitProperties) {
+        getBackgroundGuideLayer().bringToFront();
         let item = hitProperties.hitResult.item;
         if (!hitProperties.subselect) {
             const root = getRootItem(hitProperties.hitResult.item);

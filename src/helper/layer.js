@@ -50,6 +50,10 @@ const getRaster = function () {
     return _getLayer('isRasterLayer').children[0];
 };
 
+const getBackgroundPaper = function () {
+    return _getLayer('isBackgroundPaper');
+};
+
 const getBackgroundGuideLayer = function () {
     return _getLayer('isBackgroundGuideLayer');
 };
@@ -75,6 +79,7 @@ const getGuideLayer = function () {
  * @return {object} an object of the removed layers, which should be passed to showGuideLayers to re-add them.
  */
 const hideGuideLayers = function (includeRaster) {
+    const backgroundPaperLayer = getBackgroundPaper();
     const backgroundGuideLayer = getBackgroundGuideLayer();
     const guideLayer = getGuideLayer();
     guideLayer.remove();
@@ -86,6 +91,7 @@ const hideGuideLayers = function (includeRaster) {
     }
     return {
         guideLayer: guideLayer,
+        backgroundPaperLayer: backgroundPaperLayer,
         backgroundGuideLayer: backgroundGuideLayer,
         rasterLayer: rasterLayer
     };
@@ -97,6 +103,7 @@ const hideGuideLayers = function (includeRaster) {
  * @param {!object} guideLayers object of the removed layers, which was returned by hideGuideLayers
  */
 const showGuideLayers = function (guideLayers) {
+    const backgroundPaperLayer = guideLayers.backgroundPaperLayer;
     const backgroundGuideLayer = guideLayers.backgroundGuideLayer;
     const guideLayer = guideLayers.guideLayer;
     const rasterLayer = guideLayers.rasterLayer;
@@ -106,7 +113,11 @@ const showGuideLayers = function (guideLayers) {
     }
     if (!backgroundGuideLayer.index) {
         paper.project.addLayer(backgroundGuideLayer);
-        backgroundGuideLayer.sendToBack();
+        backgroundGuideLayer.insertAbove(backgroundPaperLayer);
+    }
+    if (!backgroundPaperLayer.index) {
+        paper.project.addLayer(backgroundPaperLayer);
+        backgroundPaperLayer.sendToBack();
     }
     if (!guideLayer.index) {
         paper.project.addLayer(guideLayer);
@@ -132,6 +143,9 @@ const _makeRasterLayer = function () {
 };
 
 const _makeBackgroundPaper = function (width, height, color) {
+    const paperLayer = new paper.Layer();
+    paperLayer.locked = true;
+
     // creates a checkerboard path of width * height squares in color on white
     let x = 0;
     let y = 0;
@@ -159,19 +173,20 @@ const _makeBackgroundPaper = function (width, height, color) {
     vPath.fillColor = color;
     vPath.guide = true;
     vPath.locked = true;
+
     const vGroup = new paper.Group([vRect, vPath]);
-    return vGroup;
+    vGroup.position = new paper.Point(ART_BOARD_WIDTH / 2, ART_BOARD_HEIGHT / 2);
+    vGroup.scaling = new paper.Point(8, 8);
+    vGroup.guide = true;
+    vGroup.locked = true;
+
+    paperLayer.data.isBackgroundPaper = true;
+    return paperLayer;
 };
 
 const _makeBackgroundGuideLayer = function () {
     const guideLayer = new paper.Layer();
     guideLayer.locked = true;
-
-    const vBackground = _makeBackgroundPaper(120, 90, '#E5E5E5');
-    vBackground.position = new paper.Point(ART_BOARD_WIDTH / 2, ART_BOARD_HEIGHT / 2);
-    vBackground.scaling = new paper.Point(8, 8);
-    vBackground.guide = true;
-    vBackground.locked = true;
 
     const vLine = new paper.Path.Line(new paper.Point(0, -7), new paper.Point(0, 7));
     vLine.strokeWidth = 2;
@@ -199,11 +214,14 @@ const _makeBackgroundGuideLayer = function () {
 };
 
 const setupLayers = function () {
+    console.log("SETUP")
+    const backgroundPaper = _makeBackgroundPaper(120, 90, '#E5E5E5');
     const backgroundGuideLayer = _makeBackgroundGuideLayer();
     _makeRasterLayer();
     const paintLayer = _makePaintingLayer();
     const guideLayer = _makeGuideLayer();
     backgroundGuideLayer.sendToBack();
+    backgroundPaper.sendToBack();
     guideLayer.bringToFront();
     paintLayer.activate();
 };
@@ -213,6 +231,7 @@ export {
     hideGuideLayers,
     showGuideLayers,
     getGuideLayer,
+    getBackgroundPaper,
     getBackgroundGuideLayer,
     clearRaster,
     getRaster,
