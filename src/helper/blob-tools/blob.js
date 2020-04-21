@@ -2,6 +2,7 @@ import paper from '@scratch/paper';
 import log from '../../log/log';
 import BroadBrushHelper from './broad-brush-helper';
 import SegmentBrushHelper from './segment-brush-helper';
+import MarchingBrushHelper from './marching-brush-helper';
 import {MIXED, styleCursorPreview} from '../../helper/style-path';
 import {clearSelection, getItems} from '../../helper/selection';
 import {getGuideLayer} from '../../helper/layer';
@@ -32,7 +33,7 @@ class Blobbiness {
      */
     constructor (onUpdateImage, clearSelectedItems) {
         this.broadBrushHelper = new BroadBrushHelper();
-        this.segmentBrushHelper = new SegmentBrushHelper();
+        this.segmentBrushHelper = new MarchingBrushHelper();
         this.onUpdateImage = onUpdateImage;
         this.clearSelectedItems = clearSelectedItems;
 
@@ -41,7 +42,7 @@ class Blobbiness {
         this.brushSize = null;
         this.fillColor = null;
     }
-    
+
     /**
      * Set configuration options for a blob
      * @param {!object} options Configuration
@@ -92,13 +93,13 @@ class Blobbiness {
             blob.cursorPreview.bringToFront();
             blob.cursorPreview.position = event.point;
         };
-        
+
         this.tool.onMouseDown = function (event) {
             blob.resizeCursorIfNeeded(event.point);
             if (event.event.button > 0) return; // only first mouse button
             this.active = true;
 
-            if (blob.options.brushSize < Blobbiness.THRESHOLD) {
+            if (blob.options.brushSize < Blobbiness.THRESHOLD && false) {
                 blob.brush = Blobbiness.BROAD;
                 blob.broadBrushHelper.onBroadMouseDown(event, blob.tool, blob.options);
             } else {
@@ -125,7 +126,7 @@ class Blobbiness {
 
         this.tool.onMouseUp = function (event) {
             if (event.event.button > 0 || !this.active) return; // only first mouse button
-            
+
             let lastPath;
             if (blob.brush === Blobbiness.BROAD) {
                 lastPath = blob.broadBrushHelper.onBroadMouseUp(event, blob.tool, blob.options);
@@ -263,7 +264,7 @@ class Blobbiness {
                 class: paper.PathItem
             });
         }
-        
+
         for (let i = items.length - 1; i >= 0; i--) {
             // TODO handle compound paths
             if (items[i] instanceof paper.Path && (!items[i].fillColor || items[i].fillColor._alpha === 0)) {
