@@ -34,10 +34,10 @@ class BroadBrushHelper {
     onBroadMouseDown (event, tool, options) {
         this.steps = 0;
         this.smoothed = 0;
-        tool.minDistance = Math.min(5, Math.max(2 / paper.view.zoom, options.brushSize / 2));
-        tool.maxDistance = options.brushSize;
+        tool.minDistance = Math.min(5, Math.max(2 / paper.view.zoom, options.brushSize / 2)) * 5;
+        tool.maxDistance = Infinity;
         if (event.event.button > 0) return; // only first mouse button
-        
+
         this.finalPath = new paper.Path.Circle({
             center: event.point,
             radius: options.brushSize / 2
@@ -45,7 +45,7 @@ class BroadBrushHelper {
         styleBlob(this.finalPath, options);
         this.lastPoint = event.point;
     }
-    
+
     onBroadMouseDrag (event, tool, options) {
         this.steps++;
         const step = (event.delta).normalize(options.brushSize / 2);
@@ -63,7 +63,7 @@ class BroadBrushHelper {
                 // This code makes a shape to fill in that flat edge with a rounded cap.
                 const circ = new paper.Path.Circle(this.lastPoint, options.brushSize / 2);
                 circ.fillColor = options.fillColor;
-                const rect = new paper.Path.Rectangle(
+                /*const rect = new paper.Path.Rectangle(
                     this.lastPoint.subtract(new paper.Point(-options.brushSize / 2, 0)),
                     this.lastPoint.subtract(new paper.Point(options.brushSize / 2, this.lastVec.length))
                 );
@@ -74,8 +74,9 @@ class BroadBrushHelper {
                     event.point.subtract(new paper.Point(options.brushSize / 2, event.delta.length))
                 );
                 rect2.fillColor = options.fillColor;
-                rect2.rotate(step.angle - 90, event.point);
-                this.endCaps.push(this.union(circ, this.union(rect, rect2)));
+                rect2.rotate(step.angle - 90, event.point);*/
+                //this.endCaps.push(this.union(circ, this.union(rect, rect2)));
+                this.endCaps.push(circ);
             }
         }
         this.lastVec = event.delta;
@@ -99,10 +100,12 @@ class BroadBrushHelper {
         const top = event.middlePoint.add(step);
         const bottom = event.middlePoint.subtract(step);
 
+        this.finalPath.smooth({type: 'geometric'});
+
         this.finalPath.add(top);
-        this.finalPath.add(event.point.add(step));
+        //this.finalPath.add(event.point.add(step));
         this.finalPath.insert(0, bottom);
-        this.finalPath.insert(0, event.point.subtract(step));
+        //this.finalPath.insert(0, event.point.subtract(step));
 
         if (this.finalPath.segments.length > this.smoothed + (this.smoothingThreshold * 2)) {
             this.simplify(1);
@@ -121,6 +124,7 @@ class BroadBrushHelper {
      *     passed in as when 0 is passed in)
      */
     simplify (threshold) {
+        return;
         // Length of the current path
         const length = this.finalPath.segments.length;
         // Number of new points added to front and end of path since last simplify
@@ -187,7 +191,7 @@ class BroadBrushHelper {
 
         // If the mouse up is at the same point as the mouse drag event then we need
         // the second to last point to get the right direction vector for the end cap
-        if (!event.point.equals(this.lastPoint)) {
+        /*if (!event.point.equals(this.lastPoint)) {
             const step = event.delta.normalize(options.brushSize / 2);
             step.angle += 90;
 
@@ -204,7 +208,7 @@ class BroadBrushHelper {
             event.point.add(handleVec),
             handleVec.rotate(90),
             handleVec.rotate(-90)
-        ));
+        ));*/
         this.finalPath.closePath();
 
         // Resolve self-crossings
@@ -212,16 +216,17 @@ class BroadBrushHelper {
             this.finalPath
                 .resolveCrossings()
                 .reorient(true /* nonZero */, true /* clockwise */)
-                .reduce({simplify: true});
+                .reduce({simplify: false});
         if (newPath !== this.finalPath) {
             newPath.copyAttributes(this.finalPath);
             newPath.fillColor = this.finalPath.fillColor;
             this.finalPath.remove();
             this.finalPath = newPath;
         }
-        
+
         // Try to merge end caps
         for (const cap of this.endCaps) {
+            console.log(cap);
             const temp = this.union(this.finalPath, cap);
             if (temp.area >= this.finalPath.area &&
                 !(temp instanceof paper.CompoundPath && !(this.finalPath instanceof paper.CompoundPath))) {

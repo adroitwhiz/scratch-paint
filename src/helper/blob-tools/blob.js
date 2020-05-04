@@ -2,6 +2,7 @@ import paper from '@scratch/paper';
 import log from '../../log/log';
 import BroadBrushHelper from './broad-brush-helper';
 import SegmentBrushHelper from './segment-brush-helper';
+import ExperimentalBrushHelper from './experimental-brush-helper';
 import {MIXED, styleCursorPreview} from '../../helper/style-path';
 import {clearSelection, getItems} from '../../helper/selection';
 import {getGuideLayer} from '../../helper/layer';
@@ -32,7 +33,7 @@ class Blobbiness {
      * @param {function} clearSelectedItems Callback to clear the set of selected items in the Redux state
      */
     constructor (onUpdateImage, clearSelectedItems) {
-        this.broadBrushHelper = new BroadBrushHelper();
+        this.broadBrushHelper = new ExperimentalBrushHelper();
         this.segmentBrushHelper = new SegmentBrushHelper();
         this.onUpdateImage = onUpdateImage;
         this.clearSelectedItems = clearSelectedItems;
@@ -99,7 +100,7 @@ class Blobbiness {
             if (event.event.button > 0) return; // only first mouse button
             this.active = true;
 
-            if (blob.options.brushSize < Blobbiness.THRESHOLD) {
+            if (blob.options.brushSize < Blobbiness.THRESHOLD || true) {
                 blob.brush = Blobbiness.BROAD;
                 blob.broadBrushHelper.onBroadMouseDown(event, blob.tool, blob.options);
             } else {
