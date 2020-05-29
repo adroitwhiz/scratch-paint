@@ -39,6 +39,7 @@ import {isBitmap, isVector} from '../../lib/format';
 import styles from './paint-editor.css';
 
 import bitmapIcon from './icons/bitmap.svg';
+import zoomToFitIcon from './icons/zoom-to-fit.svg';
 import zoomInIcon from './icons/zoom-in.svg';
 import zoomOutIcon from './icons/zoom-out.svg';
 import zoomResetIcon from './icons/zoom-reset.svg';
@@ -297,6 +298,17 @@ const PaintEditorComponent = props => (
                                 />
                             </Button>
                         </ButtonGroup>
+                        <Button
+                            className={styles.buttonGroupButton}
+                            onClick={props.onZoomToFit}
+                        >
+                            <img
+                                alt="Zoom To Fit"
+                                className={styles.buttonGroupButtonIcon}
+                                draggable={false}
+                                src={zoomToFitIcon}
+                            />
+                        </Button>
                     </InputGroup>
                 </div>
             </div>
@@ -325,6 +337,7 @@ PaintEditorComponent.propTypes = {
     onUndo: PropTypes.func.isRequired,
     onUpdateImage: PropTypes.func.isRequired,
     onUpdateName: PropTypes.func.isRequired,
+    onZoomToFit: PropTypes.func.isRequired,
     onZoomIn: PropTypes.func.isRequired,
     onZoomOut: PropTypes.func.isRequired,
     onZoomReset: PropTypes.func.isRequired,

@@ -1,6 +1,6 @@
 import paper from '@scratch/paper';
 import {CROSSHAIR_SIZE, getBackgroundGuideLayer, getDragCrosshairLayer, getRaster} from './layer';
-import {getAllRootItems, getSelectedRootItems} from './selection';
+import {getAllSelectableRootItems, getSelectedRootItems} from './selection';
 import {getHitBounds} from './bitmap';
 import log from '../log/log';
 
@@ -42,7 +42,7 @@ const getWorkspaceBounds = () => _workspaceBounds;
 * (such as in a zoom button click)
 */
 const setWorkspaceBounds = clipEmpty => {
-    const items = getAllRootItems();
+    const items = getAllSelectableRootItems();
     // Include the artboard and what's visible in the viewport
     let bounds = ART_BOARD_BOUNDS;
     if (!clipEmpty) {
@@ -172,7 +172,8 @@ const zoomToFit = isBitmap => {
     if (isBitmap) {
         bounds = getHitBounds(getRaster()).expand(BUFFER);
     } else {
-        const items = getAllRootItems();
+        let items = getSelectedRootItems();
+        if (items.length === 0) items = getAllSelectableRootItems();
         for (const item of items) {
             if (bounds) {
                 bounds = bounds.unite(item.bounds);

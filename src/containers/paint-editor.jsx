@@ -20,7 +20,7 @@ import {setLayout} from '../reducers/layout';
 
 import {getSelectedLeafItems} from '../helper/selection';
 import {convertToBitmap, convertToVector} from '../helper/bitmap';
-import {resetZoom, zoomOnSelection, OUTERMOST_ZOOM_LEVEL} from '../helper/view';
+import {zoomToFit, resetZoom, zoomOnSelection, OUTERMOST_ZOOM_LEVEL} from '../helper/view';
 import EyeDropperTool from '../helper/tools/eye-dropper';
 
 import Modes from '../lib/modes';
@@ -85,6 +85,7 @@ class PaintEditor extends React.Component {
             'startEyeDroppingLoop',
             'stopEyeDroppingLoop',
             'handleSetSelectedItems',
+            'handleZoomToFit',
             'handleZoomIn',
             'handleZoomOut',
             'handleZoomReset'
@@ -221,6 +222,11 @@ class PaintEditor extends React.Component {
         this.props.updateViewBounds(paper.view.matrix);
         this.handleSetSelectedItems();
     }
+    handleZoomToFit () {
+        zoomToFit(isBitmap(this.props.format));
+        this.props.updateViewBounds(paper.view.matrix);
+        this.handleSetSelectedItems();
+    }
     handleZoomOut () {
         zoomOnSelection(-PaintEditor.ZOOM_INCREMENT);
         this.props.updateViewBounds(paper.view.matrix);
@@ -331,6 +337,7 @@ class PaintEditor extends React.Component {
                 onUndo={this.props.onUndo}
                 onUpdateImage={this.props.onUpdateImage}
                 onUpdateName={this.props.onUpdateName}
+                onZoomToFit={this.handleZoomToFit}
                 onZoomIn={this.handleZoomIn}
                 onZoomOut={this.handleZoomOut}
                 onZoomReset={this.handleZoomReset}

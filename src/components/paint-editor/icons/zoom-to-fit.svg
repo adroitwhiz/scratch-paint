@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg data-name="Layer 1" version="1.1" viewBox="6 6 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+ <defs>
+  <style>.cls-4{fill:none;stroke:#575e75;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.5px;}</style>
+ </defs>
+ <title>zoom-in</title>
+ <circle class="cls-4" cx="18" cy="18" r="7"/>
+ <line class="cls-4" x1="23" x2="26" y1="23" y2="26"/>
+ <path d="m21.93 18.925c0 2.1689-1.7657 3.0753-3.9346 3.0753-2.1681 0-3.9247-0.90634-3.9247-3.0753 0-0.53605 0.08989-0.98964 0.2639-1.369l-0.06597-3.1338c-0.0083-0.34637 0.37936-0.5443 0.65976-0.33812l1.6741 1.2618c0.38761-0.20617 0.86593-0.29689 1.3929-0.29689 0.52863 0 1.0152 0.09072 1.4028 0.29689l1.6741-1.2618c0.27215-0.20618 0.65976-0.0083 0.65976 0.33812l-0.06597 3.1338c0.17319 0.37936 0.2639 0.83294 0.2639 1.369z" fill="#575e75" fill-rule="evenodd"/>
+</svg>
