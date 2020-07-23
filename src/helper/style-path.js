@@ -74,15 +74,31 @@ const createGradientObject = function (color1, color2, gradientType, bounds, rad
     if (color2 === null) {
         color2 = getColorStringForTransparent(color1);
     }
-    const halfLongestDimension = Math.max(bounds.width, bounds.height) / 2;
-    const start = gradientType === GradientTypes.RADIAL ? (radialCenter || bounds.center) :
-        gradientType === GradientTypes.VERTICAL ? bounds.topCenter :
-            gradientType === GradientTypes.HORIZONTAL ? bounds.leftCenter :
-                null;
-    const end = gradientType === GradientTypes.RADIAL ? start.add(new paper.Point(halfLongestDimension, 0)) :
-        gradientType === GradientTypes.VERTICAL ? bounds.bottomCenter :
-            gradientType === GradientTypes.HORIZONTAL ? bounds.rightCenter :
-                null;
+
+    // Force gradients to have a minimum length. If the gradient start and end points are the same or very close
+    // (e.g. applying a vertical gradient to a perfectly horizontal line or vice versa), the gradient will not appear.
+    const minGradientLength = 1e-2;
+
+    let start;
+    let end;
+    switch (gradientType) {
+    case GradientTypes.HORIZONTAL:
+        start = bounds.leftCenter;
+        end = bounds.rightCenter;
+        if (Math.abs(end.x - start.x) < minGradientLength) end.x += minGradientLength;
+        break;
+    case GradientTypes.VERTICAL:
+        start = bounds.topCenter;
+        end = bounds.bottomCenter;
+        if (Math.abs(end.y - start.y) < minGradientLength) end.y += minGradientLength;
+        break;
+    case GradientTypes.RADIAL: {
+        const halfLongestDimension = Math.max(bounds.width, bounds.height) / 2;
+        start = radialCenter || bounds.center;
+        end = start.add(new paper.Point(halfLongestDimension, 0));
+        break;
+    }
+    }
     return {
         gradient: {
             stops: [color1, color2],
